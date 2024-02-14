@@ -4,8 +4,8 @@ import { Player } from './Player'
 import { Field } from './Field';
 
 type DisplayTypes = {
-  keydownEvent?: KeyEventTypes;
-  keyupEvent?: KeyEventTypes;
+  keydownEvent?: KeyEventTypes | null;
+  keyupEvent?: KeyEventTypes | null;
 }
 
 export const Display: React.FC<DisplayTypes> = ({ keydownEvent, keyupEvent }) => {

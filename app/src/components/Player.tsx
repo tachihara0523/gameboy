@@ -5,8 +5,8 @@ import { KeyEventTypes } from '../App';
 
 type PlayerProps = {
   style?: React.CSSProperties;
-  keydownEvent?: KeyEventTypes;
-  keyupEvent?: KeyEventTypes;
+  keydownEvent?: KeyEventTypes | null;
+  keyupEvent?: KeyEventTypes | null;
 }
 
 export const Player: React.FC<PlayerProps> = ({ style, keydownEvent, keyupEvent }) => {
