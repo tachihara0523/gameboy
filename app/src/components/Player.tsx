@@ -3,13 +3,19 @@ import '../styles/player.scss'
 import { DotObject } from './DotObject'
 import { KeyEventTypes } from '../App';
 
+type PlayerPosition = {
+  y: number;
+  x: number;
+}
+
 type PlayerProps = {
   style?: React.CSSProperties;
   keydownEvent?: KeyEventTypes | null;
   keyupEvent?: KeyEventTypes | null;
+  playerPosition: PlayerPosition;
 }
 
-export const Player: React.FC<PlayerProps> = ({ style, keydownEvent, keyupEvent }) => {
+export const Player: React.FC<PlayerProps> = ({ style, keydownEvent, keyupEvent, playerPosition }) => {
   const [legUps, setLegUps] = useState({ left: false, right: false });
   const walkIntervalId = useRef<number | null>(null);
   const walk = () => {
@@ -30,6 +36,15 @@ export const Player: React.FC<PlayerProps> = ({ style, keydownEvent, keyupEvent 
     setLegUps({ left: false, right: false });
     clearInterval(walkIntervalId.current);
     walkIntervalId.current = null;
+  }
+
+  const positionStyle = () => {
+    const style: React.CSSProperties = {};
+
+    playerPosition.y > 0 ? style.marginTop = playerPosition.y * -1 : style.marginBottom = playerPosition.y; 
+    playerPosition.x > 0 ? style.marginLeft = playerPosition.x * -1 : style.marginRight = playerPosition.x; 
+
+    return style;
   }
 
   const legWalkStyle = (legType: 'left' | 'right') => {
@@ -61,7 +76,7 @@ export const Player: React.FC<PlayerProps> = ({ style, keydownEvent, keyupEvent 
   }, [keydownEvent, keyupEvent]);
 
   return (
-    <div style={{ ...style }}>
+    <div style={{ ...style, ...positionStyle() }}>
       <div className="core" style={{ display: 'flex', alignItems: 'center', flexDirection: 'column' }}>
         <DotObject row={5} column={5} baseColor='#696969' fills={{
           '#deb887': [
