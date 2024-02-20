@@ -32,16 +32,24 @@ export const Display: React.FC<DisplayTypes> = ({ keydownEvent, keyupEvent }) =>
   })
 
   useEffect(() => {
+    type MovementRangeObj = {
+      min: number;
+      max: number;
+    };
+    type FieldMovementRange = {
+      [key in 'y' | 'x']: MovementRangeObj
+    }
+
     if (!keydownEvent) { return }
 
-    const moveStep = 5;
+    const moveStep = 10;
     const fieldHalfYRejectWindowSize = (fieldMaxY - windowHeight) / 2;
     const fieldHalfXRejectWindowSize = (fieldMaxX - windowWidth) / 2;
-    const fieldMovementRange = {
+    const fieldMovementRange: FieldMovementRange = {
       y: { min: fieldHalfYRejectWindowSize * -1, max: fieldHalfYRejectWindowSize },
       x: { min: fieldHalfXRejectWindowSize * -1, max: fieldHalfXRejectWindowSize }
     }
-    let movementAxis: 'y' | 'x' | undefined;
+    let movementAxis: 'y' | 'x';
     let movementAmount: number;
 
     switch (keydownEvent.key) {
@@ -63,17 +71,16 @@ export const Display: React.FC<DisplayTypes> = ({ keydownEvent, keyupEvent }) =>
         break;
     }
 
-    if (movementAxis === undefined) { return }
-
     setFieldMovement(currentFieldMovement => {
-      const newFieldMovement = {...currentFieldMovement};
+      const newFieldMovement = { ...currentFieldMovement };
       newFieldMovement[movementAxis] = currentFieldMovement[movementAxis] + movementAmount;
       newFieldMovement.y = Math.min(fieldMovementRange.y.max, Math.max(newFieldMovement.y, fieldMovementRange.y.min));
       newFieldMovement.x = Math.min(fieldMovementRange.x.max, Math.max(newFieldMovement.x, fieldMovementRange.x.min));
 
       setPlayerPosition(currentPlayerPosition => {
-        const newPlayerPosition = {...currentPlayerPosition};
-        if(currentPlayerPosition[movementAxis] !== 0 || Object.keys(fieldMovementRange[movementAxis]).some(limitType => fieldMovementRange[movementAxis][limitType] === currentFieldMovement[movementAxis])) {
+        const newPlayerPosition = { ...currentPlayerPosition };
+        const limitTypes = Object.keys(fieldMovementRange[movementAxis]) as Array<keyof MovementRangeObj>
+        if (currentPlayerPosition[movementAxis] !== 0 || limitTypes.some(limitType => fieldMovementRange[movementAxis][limitType] === currentFieldMovement[movementAxis])) {
           newPlayerPosition[movementAxis] = currentPlayerPosition[movementAxis] + movementAmount;
         }
 
