@@ -42,7 +42,7 @@ export const Player: React.FC<PlayerProps> = ({ style, keydownEvent, keyupEvent,
     const style: React.CSSProperties = {};
 
     playerPosition.y > 0 ? style.marginTop = playerPosition.y * -1 : style.marginBottom = playerPosition.y; 
-    playerPosition.x > 0 ? style.marginLeft = playerPosition.x * -1 : style.marginRight = playerPosition.x; 
+    playerPosition.x > 0 ? style.marginLeft = playerPosition.x : style.marginRight = playerPosition.x * -1; 
 
     return style;
   }

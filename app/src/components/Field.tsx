@@ -3,7 +3,12 @@ import { FieldTile } from './FieldTile';
 import { House } from './field-objects/House';
 import { Tree } from './field-objects/Tree';
 
-type FieldPositionType = {
+type fieldCenterPosition = {
+  y: number;
+  x: number;
+}
+
+type fieldMovement = {
   y: number;
   x: number;
 }
@@ -12,10 +17,11 @@ type FieldProps = {
   tileY: number;
   tileX: number;
   fieldTileSize: number;
-  fieldPosition: FieldPositionType;
+  fieldCenterPosition: fieldCenterPosition;
+  fieldMovement: fieldMovement;
 }
 
-export const Field: React.FC<FieldProps> = ({ tileY, tileX, fieldTileSize, fieldPosition }) => {
+export const Field: React.FC<FieldProps> = ({ tileY, tileX, fieldTileSize, fieldCenterPosition, fieldMovement }) => {
   const randomObject = () => {
     const fieldObjects = [...Array(10), <House />, <Tree />];
 
@@ -32,8 +38,8 @@ export const Field: React.FC<FieldProps> = ({ tileY, tileX, fieldTileSize, field
 
 return <div style={{
   position: 'absolute',
-  top: fieldPosition.y,
-  left: fieldPosition.x,
+  top: fieldCenterPosition.y + fieldMovement.y,
+  left: fieldCenterPosition.x + fieldMovement.x * -1,
   display: 'flex',
   flexDirection: 'column'
 }}>

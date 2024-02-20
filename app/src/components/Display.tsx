@@ -16,12 +16,12 @@ export const Display: React.FC<DisplayTypes> = ({ keydownEvent, keyupEvent }) =>
   const fieldTileSize = 100;
   const fieldMaxY = tileY * fieldTileSize;
   const fieldMaxX = tileX * fieldTileSize;
-  const defaultFieldPosition = {
+  const fieldCenterPosition = {
     y: ((fieldMaxY / 2) - (windowHeight / 2)) * -1,
     x: ((fieldMaxX / 2) - (windowWidth / 2)) * -1,
   }
 
-  const [fieldPosition, setFieldPosition] = useState({
+  const [fieldMovement, setFieldMovement] = useState({
     y: 0,
     x: 0,
   })
@@ -34,73 +34,58 @@ export const Display: React.FC<DisplayTypes> = ({ keydownEvent, keyupEvent }) =>
   useEffect(() => {
     if (!keydownEvent) { return }
 
-    setFieldPosition(currentPosition => {
-      const moveStep = 5;
-      let newY = currentPosition.y;
-      let newX = currentPosition.x;
+    const moveStep = 5;
+    const fieldHalfYRejectWindowSize = (fieldMaxY - windowHeight) / 2;
+    const fieldHalfXRejectWindowSize = (fieldMaxX - windowWidth) / 2;
+    const fieldMovementRange = {
+      y: { min: fieldHalfYRejectWindowSize * -1, max: fieldHalfYRejectWindowSize },
+      x: { min: fieldHalfXRejectWindowSize * -1, max: fieldHalfXRejectWindowSize }
+    }
+    let movementAxis: 'y' | 'x' | undefined;
+    let movementAmount: number;
 
-      switch (keydownEvent.key) {
-        case 'ArrowUp':
-          newY = newY + moveStep;
-          break;
-        case 'ArrowDown':
-          newY = newY - moveStep;
-          break;
-        case 'ArrowLeft':
-          newX = newX + moveStep;
-          break;
-        case 'ArrowRight':
-          newX = newX - moveStep;
-          break;
-      }
+    switch (keydownEvent.key) {
+      case 'ArrowUp':
+        movementAxis = 'y';
+        movementAmount = moveStep;
+        break;
+      case 'ArrowDown':
+        movementAxis = 'y';
+        movementAmount = moveStep * -1;
+        break;
+      case 'ArrowLeft':
+        movementAxis = 'x';
+        movementAmount = moveStep * -1;
+        break;
+      case 'ArrowRight':
+        movementAxis = 'x';
+        movementAmount = moveStep;
+        break;
+    }
 
-      const fieldHalfYRejectWindowSize = (fieldMaxY - windowHeight) / 2;
-      const fieldHalfXRejectWindowSize = (fieldMaxX - windowWidth) / 2;
-      const minY = fieldHalfYRejectWindowSize * -1;
-      const maxY = fieldHalfYRejectWindowSize;
-      const minX = fieldHalfXRejectWindowSize * -1;
-      const maxX = fieldHalfXRejectWindowSize;
+    if (movementAxis === undefined) { return }
+
+    setFieldMovement(currentFieldMovement => {
+      const newFieldMovement = {...currentFieldMovement};
+      newFieldMovement[movementAxis] = currentFieldMovement[movementAxis] + movementAmount;
+      newFieldMovement.y = Math.min(fieldMovementRange.y.max, Math.max(newFieldMovement.y, fieldMovementRange.y.min));
+      newFieldMovement.x = Math.min(fieldMovementRange.x.max, Math.max(newFieldMovement.x, fieldMovementRange.x.min));
 
       setPlayerPosition(currentPlayerPosition => {
-        let newPlayerY = currentPlayerPosition.y;
-        let newPlayerX = currentPlayerPosition.x;
-
-        if (newPlayerY !== 0 || (newY > maxY || newY < minY)) {
-          switch (keydownEvent.key) {
-            case 'ArrowUp':
-              newPlayerY = newPlayerY + moveStep;
-              break;
-            case 'ArrowDown':
-              newPlayerY = newPlayerY - moveStep;
-              break;
-          }
+        const newPlayerPosition = {...currentPlayerPosition};
+        if(currentPlayerPosition[movementAxis] !== 0 || Object.keys(fieldMovementRange[movementAxis]).some(limitType => fieldMovementRange[movementAxis][limitType] === currentFieldMovement[movementAxis])) {
+          newPlayerPosition[movementAxis] = currentPlayerPosition[movementAxis] + movementAmount;
         }
 
-        if (newPlayerX !== 0 || (newX > maxX || newX < minX)) {
-          switch (keydownEvent.key) {
-            case 'ArrowLeft':
-              newPlayerX = newPlayerX + moveStep;
-              break;
-            case 'ArrowRight':
-              newPlayerX = newPlayerX - moveStep;
-              break;
-          }
+        if (newPlayerPosition[movementAxis] !== 0) {
+          newFieldMovement[movementAxis] = currentFieldMovement[movementAxis];
         }
 
-        return {
-          y: newPlayerY,
-          x: newPlayerX,
-        }
+        return newPlayerPosition;
       })
 
-      newY = Math.min(maxY, Math.max(newY, minY));
-      newX = Math.min(maxX, Math.max(newX, minX));
-
-      return {
-        y: newY,
-        x: newX
-      }
-    });
+      return newFieldMovement;
+    })
   }, [keydownEvent, fieldMaxX, fieldMaxY])
 
   return <div style={{
@@ -113,10 +98,7 @@ export const Display: React.FC<DisplayTypes> = ({ keydownEvent, keyupEvent }) =>
     alignItems: 'center',
     justifyContent: 'center'
   }}>
-    <Field tileY={tileY} tileX={tileX} fieldTileSize={fieldTileSize} fieldPosition={{
-      y: defaultFieldPosition.y + fieldPosition.y,
-      x: defaultFieldPosition.x + fieldPosition.x
-    }} />
+    <Field tileY={tileY} tileX={tileX} fieldTileSize={fieldTileSize} fieldCenterPosition={fieldCenterPosition} fieldMovement={fieldMovement} />
     <Player style={{ position: 'relative', zIndex: 5 }} keydownEvent={keydownEvent} keyupEvent={keyupEvent} playerPosition={playerPosition} />
   </div>
 }
