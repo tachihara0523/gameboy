@@ -13,9 +13,11 @@ export const Display: React.FC<DisplayTypes> = ({ keydownEvent, keyupEvent }) =>
   const windowHeight = 300;
   const tileY = 10;
   const tileX = 10;
-  const fieldTileSize = 100;
-  const fieldMaxY = tileY * fieldTileSize;
-  const fieldMaxX = tileX * fieldTileSize;
+  const fieldTileDotPx = 5;
+  const fieldTileDotNumberPerSide = 20;
+  // const fieldTileSize = 100;
+  const fieldMaxY = tileY * (fieldTileDotPx * fieldTileDotNumberPerSide);
+  const fieldMaxX = tileX * (fieldTileDotPx * fieldTileDotNumberPerSide);
   const fieldCenterPosition = {
     y: ((fieldMaxY / 2) - (windowHeight / 2)) * -1,
     x: ((fieldMaxX / 2) - (windowWidth / 2)) * -1,
@@ -30,6 +32,27 @@ export const Display: React.FC<DisplayTypes> = ({ keydownEvent, keyupEvent }) =>
     y: 0,
     x: 0,
   })
+
+  type ObstacleObjectMapX = boolean[];
+  type ObstacleObjectMapY = ObstacleObjectMapX[];
+
+  const [obstacleObjectMap, setObstacleOBjectMap] = useState<ObstacleObjectMapY>([])
+  const addObstacleObject = (y: number, x: number) => {
+    
+  }
+
+  // type CordinatesX = boolean[];
+  // type CordinatesY = CordinatesX[];
+
+  // const [dotObjectCordinates, setDotObjectCordinates] = useState<CordinatesY>([]);
+  // const addDotObjectCordinates = (y: number, x: number) => {
+  //   setDotObjectCordinates(current => {
+  //     current[y] ??= [];
+  //     current[y][x] = true;
+
+  //     return current;
+  //   })
+  // }
 
   useEffect(() => {
     type MovementRangeObj = {
@@ -105,7 +128,13 @@ export const Display: React.FC<DisplayTypes> = ({ keydownEvent, keyupEvent }) =>
     alignItems: 'center',
     justifyContent: 'center'
   }}>
-    <Field tileY={tileY} tileX={tileX} fieldTileSize={fieldTileSize} fieldCenterPosition={fieldCenterPosition} fieldMovement={fieldMovement} />
+    <Field tileY={tileY} tileX={tileX}
+      fieldTileDotPx={fieldTileDotPx}
+      fieldTileDotNumberPerSide={fieldTileDotNumberPerSide}
+      fieldCenterPosition={fieldCenterPosition} 
+      fieldMovement={fieldMovement} 
+      addDotObjectCordinates={addDotObjectCordinates}
+    />
     <Player style={{ position: 'relative', zIndex: 5 }} keydownEvent={keydownEvent} keyupEvent={keyupEvent} playerPosition={playerPosition} />
   </div>
 }

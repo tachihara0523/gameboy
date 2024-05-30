@@ -1,11 +1,17 @@
 import React from "react";
 import { DotObject } from "../DotObject";
 
-export const Tree: React.FC = () => {
+type Props = {
+  fieldTileDotPx: number;
+}
+
+export const Tree: React.FC<Props> = ({ fieldTileDotPx }) => {
   return   <DotObject 
   row={12} // 行数
   column={8} // 列数
   baseColor="transparent" // 背景色
+  dotSizeW={`${fieldTileDotPx}px`}
+  dotSizeH={`${fieldTileDotPx}px`}
   fills={ {
     'brown': [ // 幹
       [9, 4], [10, 4], [11, 4]
@@ -21,9 +27,7 @@ export const Tree: React.FC = () => {
       [7, 2], [7, 3], [7, 4], [7, 5], [7, 6],
       [8, 3], [8, 4], [8, 5]
     ]
-  }} 
-  dotSizeW="5px" // 各ドットの横幅
-  dotSizeH="5px" // 各ドットの縦幅
+  }}
 />
 
 }
