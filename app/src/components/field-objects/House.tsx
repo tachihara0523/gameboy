@@ -2,10 +2,10 @@ import React from "react";
 import { DotObject } from "../DotObject";
 
 type Props = {
-  tileY: number;
-  tileX: number;
+  // tileY: number;
+  // tileX: number;
   fieldTileDotPx: number;
-  addDotObjectCordinates: (y: number, x: number) => void;
+  // addDotObjectCordinates: (y: number, x: number) => void;
 }
 
 export const House: React.FC<Props> = ({ fieldTileDotPx }) => {

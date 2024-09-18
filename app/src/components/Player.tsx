@@ -3,7 +3,7 @@ import '../styles/player.scss'
 import { DotObject } from './DotObject'
 import { KeyEventTypes } from '../App';
 
-type PlayerPosition = {
+type playerMovement = {
   y: number;
   x: number;
 }
@@ -12,10 +12,10 @@ type PlayerProps = {
   style?: React.CSSProperties;
   keydownEvent?: KeyEventTypes | null;
   keyupEvent?: KeyEventTypes | null;
-  playerPosition: PlayerPosition;
+  playerMovement: playerMovement;
 }
 
-export const Player: React.FC<PlayerProps> = ({ style, keydownEvent, keyupEvent, playerPosition }) => {
+export const Player: React.FC<PlayerProps> = ({ style, keydownEvent, keyupEvent, playerMovement }) => {
   const [legUps, setLegUps] = useState({ left: false, right: false });
   const walkIntervalId = useRef<number | null>(null);
   const walk = () => {
@@ -38,15 +38,6 @@ export const Player: React.FC<PlayerProps> = ({ style, keydownEvent, keyupEvent,
     walkIntervalId.current = null;
   }
 
-  const positionStyle = () => {
-    const style: React.CSSProperties = {};
-
-    playerPosition.y > 0 ? style.marginTop = playerPosition.y * -1 : style.marginBottom = playerPosition.y; 
-    playerPosition.x > 0 ? style.marginLeft = playerPosition.x : style.marginRight = playerPosition.x * -1; 
-
-    return style;
-  }
-
   const legWalkStyle = (legType: 'left' | 'right') => {
     return (legUps[legType]) ? {
       transform: 'translateY(-5px)'
@@ -56,14 +47,14 @@ export const Player: React.FC<PlayerProps> = ({ style, keydownEvent, keyupEvent,
   useEffect(() => {
     const event = keydownEvent || keyupEvent;
 
-    if(!event || ![
+    if (!event || ![
       'ArrowUp',
       'ArrowDown',
       'ArrowLeft',
       'ArrowRight'
     ].includes(event.key)) { return }
 
-    switch(event) {
+    switch (event) {
       case keydownEvent:
         walk();
         break;
@@ -76,7 +67,12 @@ export const Player: React.FC<PlayerProps> = ({ style, keydownEvent, keyupEvent,
   }, [keydownEvent, keyupEvent]);
 
   return (
-    <div style={{ ...style, ...positionStyle() }}>
+    <div style={{
+      ...style, 
+      marginLeft: playerMovement.x,
+      marginBottom: playerMovement.y,
+      zIndex: 5,
+    }}>
       <div className="core" style={{ display: 'flex', alignItems: 'center', flexDirection: 'column' }}>
         <DotObject row={5} column={5} baseColor='#696969' fills={{
           '#deb887': [

@@ -2,6 +2,8 @@ import React, { useRef } from 'react';
 import { FieldTile } from './FieldTile';
 import { House } from './field-objects/House';
 import { Tree } from './field-objects/Tree';
+import { Player } from './Player';
+import { KeyEventTypes } from '../App';
 
 type fieldCenterPosition = {
   y: number;
@@ -13,6 +15,11 @@ type fieldMovement = {
   x: number;
 }
 
+type PlayerPosition = {
+  y: number;
+  x: number;
+}
+
 type FieldProps = {
   tileY: number;
   tileX: number;
@@ -20,7 +27,10 @@ type FieldProps = {
   fieldTileDotNumberPerSide: number;
   fieldCenterPosition: fieldCenterPosition;
   fieldMovement: fieldMovement;
-  addDotObjectCordinates: (y: number, x: number) => void;
+  playerPosition: PlayerPosition;
+  keydownEvent?: KeyEventTypes | null;
+  keyupEvent?: KeyEventTypes | null;
+  // addDotObjectCordinates: (y: number, x: number) => void;
 }
 
 export const Field: React.FC<FieldProps> = ({
@@ -30,10 +40,14 @@ export const Field: React.FC<FieldProps> = ({
   fieldMovement,
   fieldTileDotPx,
   fieldTileDotNumberPerSide,
-  addDotObjectCordinates
+  playerPosition,
+  keydownEvent,
+  keyupEvent
+  // addDotObjectCordinates
 }) => {
   const randomObject = () => {
-    const fieldObjects = [...Array(10), <House fieldTileDotPx={fieldTileDotPx} addDotObjectCordinates={addDotObjectCordinates} />, <Tree fieldTileDotPx={fieldTileDotPx} />];
+    // const fieldObjects = [...Array(10), <House fieldTileDotPx={fieldTileDotPx} addDotObjectCordinates={addDotObjectCordinates} />, <Tree fieldTileDotPx={fieldTileDotPx} />];
+    const fieldObjects = [...Array(10), <House fieldTileDotPx={fieldTileDotPx} tileX={tileX} tileY={tileY} />, <Tree fieldTileDotPx={fieldTileDotPx} />];
 
     return fieldObjects[Math.floor(Math.random() * fieldObjects.length)];
   }
@@ -53,6 +67,8 @@ export const Field: React.FC<FieldProps> = ({
     display: 'flex',
     flexDirection: 'column'
   }}>
+    <Player keydownEvent={keydownEvent} keyupEvent={keyupEvent} playerPosition={playerPosition} />
+
     {tiles.current.map((rowTiles, i) => {
       return <div style={{ display: 'flex' }} key={i}>{rowTiles}</div>
     })}
